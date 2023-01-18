@@ -14,6 +14,7 @@ const EditorPage = () => {
   const reactNavigator  = useNavigate();    // navigate to another page
   const {roomId} = useParams();   // get the roomId from the url
   const [client, setClients] = useState([]); // list of clients in the room
+  const [isSocketResponse,setIsServerResponse] = useState(false);
   const copyRoomId = async () => {   // copy the roomId to clipboard
     try {
       await navigator.clipboard.writeText(roomId);
@@ -23,20 +24,13 @@ const EditorPage = () => {
       console.log(error)
     }
   }
+ 
   const leaveRoom = () =>{
     reactNavigator('/');   // navigate to home page
   }
   useEffect(() => {
     const init = async () => { 
       socketRef.current = await initSocket();  // initialize the socket
-      socketRef.current.on('connect_error',(err)=>{ handleErrors(err) }); // handle errors
-      socketRef.current.on('connect_failed',(err)=>{ handleErrors(err) });
-
-      const handleErrors = (err) => {
-        console.log('socket error',err);
-        toast.error('Socket error');     // show error message
-        reactNavigator('/');       // navigate to home page
-      }
       socketRef.current.emit(ACTIONS.JOIN,{    // emit the join event
          roomId,  // roomId from the url
         username:location.state?.username,  // get the username from the location state
@@ -88,16 +82,27 @@ const EditorPage = () => {
       </div>
       <h3>Connected</h3>
       <div className='clientList'>
-        {client.map((i) =>(
+       {client ? (
+        client.map((i) =>(
           <Client key={i.socketId} username={i.username}/>
-        ))}
+        ))
+       ):(
+        <div>Loading...</div>
+       )}
       </div>
      </div>
+     <a href='https://www.programiz.com/cpp-programming/online-compiler/' target='_blank'><button className='btn codeBtn'>Run Code</button></a>
      <button className='btn copyBtn' onClick={copyRoomId}>COPY ROOM ID</button>
      <button className='btn leaveBtn' onClick={leaveRoom}>Leave</button>
       </div>
       <div className='editorWrap'>
-        <Editor socketRef={socketRef} roomId={roomId} onCodeChange={(code)=> codeRef.current=code}/>
+        {client ? (
+          <Editor socketRef={socketRef} roomId={roomId} onCodeChange={(code)=> codeRef.current=code}/>
+        ):(
+          <div>
+            Loading...
+          </div>
+        )}
       </div>
       </div>
     </>

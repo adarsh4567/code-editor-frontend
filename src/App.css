@@ -114,6 +114,14 @@ footer a{
   margin-top: 10px;
   width: 100%;
 }
+.codeBtn{
+  margin-bottom: 10px;
+  width: 100%;
+}
+.codeBtn:hover{
+  background: blue;
+  color: white;
+}
 .leaveBtn:hover{
   background: #FF0000;
 }
