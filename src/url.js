@@ -1,1 +1,1 @@
-export const url = 'https://code-editor-backend.vercel.app'
+export const url = 'https://synccode.onrender.com'
